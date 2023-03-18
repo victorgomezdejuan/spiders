@@ -146,6 +146,26 @@ public class Tests
     public void UpRightCell_MoveLeft()
         => AssertInvalidMovement(1, 5, Movement.Left);
 
+    [Test]
+    public void OffMapLimits_MoveUp()
+        => AssertInvalidMovement(3, 0, Movement.Up);
+
+    [Test]
+    public void OffMapLimits_MoveRight()
+        => AssertInvalidMovement(9, 0, Movement.Right);
+
+    [Test]
+    public void OffMapLimits_MoveDown()
+       => AssertInvalidMovement(9, 8, Movement.Down);
+
+    [Test]
+    public void OffMapLimits_MoveLeft()
+       => AssertInvalidMovement(0, 4, Movement.Left);
+
+    [Test]
+    public void MoveToNoCell()
+       => AssertInvalidMovement(5, 0, Movement.Down);
+
     private static int DistanceBetween(Position myPosition, Position preyPosition)
         => Math.Abs(myPosition.X - preyPosition.X) + Math.Abs(myPosition.Y - preyPosition.Y);
 

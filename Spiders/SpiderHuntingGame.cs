@@ -42,9 +42,20 @@ public class SpiderHuntingGame
         if (!MyTurn)
             throw new NotYourTurnException();
 
-        MyPosition = Map.Single(c => c.Position.Equals(MyPosition)).Move(movement);
+        Position newPosition = CellOf(MyPosition).Move(movement);
+
+        if (InvalidPosition(newPosition))
+            throw new InvalidMovementException();
+
+        MyPosition = newPosition;
         MyTurn = false;
     }
+
+    private static IMapCell CellOf(Position newPosition)
+        => Map.Single(c => c.Position.Equals(newPosition));
+
+    private static bool InvalidPosition(Position newPosition)
+        => newPosition.X < 0 || newPosition.X > MaxXPosition || newPosition.Y < 0 || newPosition.Y > MaxYPosition || CellOf(newPosition) is NoCell;
 
     private static Position MyRandomPosition()
         => new(RandomValue(MaxXPosition), RandomValue(MaxYPosition));
