@@ -15,6 +15,17 @@ public class SpiderHuntingGame
     public Position MyPosition { get; }
     public Position PreyPosition { get; }
     public bool MyTurn { get; private set; }
+    public string Output => string.Format(
+        "/ - - O - O - O - O\r\n" +
+        "/ | | | |\r\n| / - O - O - O - O\r\n" +
+        "| / | | | |\r\nO - - O - O - O - O\r\n" +
+        "| \\ | | | |\r\n" +
+        "| \\ - O - O - O - O\r\n" +
+        "\\ | | | |\r\n" +
+        "\\ - - O - O - O - O\r\n\r\n" +
+        "My position:{0}, {1}\r\n" +
+        "Prey's position: {2}, {3}",
+        MyPosition.X, MyPosition.Y, PreyPosition.X, PreyPosition.Y);
 
     public void Move()
     {
