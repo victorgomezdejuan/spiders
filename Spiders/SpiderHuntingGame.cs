@@ -14,6 +14,8 @@ public class SpiderHuntingGame
         Right
     }
 
+    private enum Axis { X, Y }
+
     private const int MaxXPosition = 9;
     private const int MaxYPosition = 8;
     private const int InitialDistance = 2;
@@ -52,18 +54,28 @@ public class SpiderHuntingGame
 
     private Position PreyRandomPosition()
     {
-        int xPosition, yPosition;
         int xDistance = new Random().Next(InitialDistance);
         int yDistance = InitialDistance - xDistance;
-
-        xPosition =
-            MyPosition.X >= xDistance ?
-            MyPosition.X + RandomSign(xDistance) : MyPosition.X + xDistance;
-        yPosition =
-            MyPosition.Y >= yDistance ?
-            MyPosition.Y + RandomSign(yDistance) : MyPosition.X + yDistance;
+        int xPosition = CalculatePreyStartingCoordinate(xDistance, Axis.X);
+        int yPosition = CalculatePreyStartingCoordinate(yDistance, Axis.Y);
 
         return new Position(xPosition, yPosition);
+    }
+
+    private int CalculatePreyStartingCoordinate(int distance, Axis axis)
+    {
+        int yPosition;
+        int maxPosition = axis == Axis.X ? MaxXPosition : MaxYPosition;
+        int myPosition = axis == Axis.X ? MyPosition.X : MyPosition.Y;
+
+        if ((myPosition - distance) >= 0 && (myPosition + distance) <= maxPosition)
+            yPosition = myPosition + RandomSign(distance);
+        else if ((myPosition - distance) >= 0)
+            yPosition = myPosition - distance;
+        else
+            yPosition = myPosition + distance;
+
+        return yPosition;
     }
 
     private static int RandomSign(int xDistance)

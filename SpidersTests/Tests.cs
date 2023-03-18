@@ -67,51 +67,101 @@ public class Tests
     }
 
     [Test]
+    public void AllDirectionCell_MoveUp()
+        => AssertMovement(3, 2, Movement.Up, 3, 1);
+
+    [Test]
+    public void AllDirectionCell_MoveRight()
+        => AssertMovement(3, 2, Movement.Right, 4, 2);
+
+    [Test]
+    public void AllDirectionCell_MoveDown()
+        => AssertMovement(3, 2, Movement.Down, 3, 3);
+
+    [Test]
+    public void AllDirectionCell_MoveLeft()
+        => AssertMovement(3, 2, Movement.Left, 2, 2);
+
+    [Test]
     public void DownRightCell_MoveDown()
-    {
-        SpiderHuntingGameMock game = new(new(0, 0), new(2, 2));
-
-        game.Move(Movement.Down);
-
-        Assert.That(game.MyPosition, Is.EqualTo(new Position(0, 1)));
-    }
+        => AssertMovement(0, 0, Movement.Down, 0, 1);
 
     [Test]
     public void DownRightCell_MoveRight()
-    {
-        SpiderHuntingGameMock game = new(new(0, 0), new(2, 2));
-
-        game.Move(Movement.Right);
-
-        Assert.That(game.MyPosition, Is.EqualTo(new Position(1, 0)));
-    }
+        => AssertMovement(0, 0, Movement.Right, 1, 0);
 
     [Test]
     public void DownRightCell_MoveUp()
-    {
-        SpiderHuntingGameMock game = new(new(0, 1), new(2, 2));
-
-        Assert.Throws<InvalidMovementException>(() => game.Move(Movement.Up));
-    }
+        => AssertInvalidMovement(0, 1, Movement.Up);
 
     [Test]
     public void DownRightCell_MoveLeft()
-    {
-        SpiderHuntingGameMock game = new(new(0, 1), new(2, 2));
+        => AssertInvalidMovement(0, 1, Movement.Left);
 
-        Assert.Throws<InvalidMovementException>(() => game.Move(Movement.Left));
-    }
+    [Test]
+    public void DownUpCell_MoveUp()
+    => AssertMovement(1, 1, Movement.Up, 1, 0);
+
+    [Test]
+    public void DownUpCell_MoveRight()
+        => AssertInvalidMovement(1, 1, Movement.Right);
+
+    [Test]
+    public void DownUpCell_MoveDown()
+        => AssertMovement(1, 1, Movement.Down, 1, 2);
+
+    [Test]
+    public void DownUpCell_MoveLeft()
+        => AssertInvalidMovement(1, 1, Movement.Left);
+
+    [Test]
+    public void LeftRightCell_MoveUp()
+        => AssertInvalidMovement(2, 2, Movement.Up);
+
+    [Test]
+    public void LeftRightCell_MoveRight()
+        => AssertMovement(2, 2, Movement.Right, 3, 2);
+
+    [Test]
+    public void LeftRightCell_MoveDown()
+        => AssertInvalidMovement(2, 2, Movement.Down);
+
+    [Test]
+    public void LeftRightCell_MoveLeft()
+        => AssertMovement(2, 2, Movement.Left, 1, 2);
 
     [Test]
     public void UpRightCell_MoveUp()
-    {
-        SpiderHuntingGameMock game = new(new(1, 5), new(2, 2));
+    => AssertMovement(1, 5, Movement.Up, 1, 4);
 
-        game.Move(Movement.Up);
+    [Test]
+    public void UpRightCell_MoveRight()
+        => AssertMovement(1, 5, Movement.Right, 2, 5);
 
-        Assert.That(game.MyPosition, Is.EqualTo(new Position(1, 4)));
-    }
+    [Test]
+    public void UpRightCell_MoveDown()
+        => AssertInvalidMovement(1, 5, Movement.Down);
+
+    [Test]
+    public void UpRightCell_MoveLeft()
+        => AssertInvalidMovement(1, 5, Movement.Left);
 
     private static int DistanceBetween(Position myPosition, Position preyPosition)
         => Math.Abs(myPosition.X - preyPosition.X) + Math.Abs(myPosition.Y - preyPosition.Y);
+
+    private static void AssertMovement(int startingX, int startingY, Movement movement, int resultingX, int resultingY)
+    {
+        SpiderHuntingGameMock game = new(new(startingX, startingY), new(8, 9));
+
+        game.Move(movement);
+
+        Assert.That(game.MyPosition, Is.EqualTo(new Position(resultingX, resultingY)));
+    }
+
+    public static void AssertInvalidMovement(int startingX, int startingY, Movement movement)
+    {
+        SpiderHuntingGameMock game = new(new(startingX, startingY), new(8, 9));
+
+        Assert.Throws<InvalidMovementException>(() => game.Move(movement));
+    }
 }
