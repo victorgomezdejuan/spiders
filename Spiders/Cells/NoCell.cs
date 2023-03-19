@@ -1,16 +1,15 @@
-﻿using Spiders.Exceptions;
-using static Spiders.SpiderHuntingGame;
+﻿using static Spiders.SpiderHuntingGame;
 
 namespace Spiders.Cells;
-internal class NoCell : IMapCell
+
+public class NoCell : IMapCell
 {
     public NoCell(int x, int y)
         => Position = new Position(x, y);
 
     public char Symbol => ' ';
 
-    public Position Position { get; }
+    public Movement[] PosibleMovements => Array.Empty<Movement>();
 
-    public Position Move(Movement movement)
-        => throw new InvalidMovementException();
+    public Position Position { get; }
 }

@@ -38,10 +38,22 @@ public class Tests
     {
         SpiderHuntingGameMock game = new(new(0, 0), new(2, 2));
 
-        game.Move(Movement.Right);
+        game.MoveMe(Movement.Right);
 
         Assert.That(game.MyTurn, Is.False);
-        Assert.Throws<NotYourTurnException>(() => game.Move(Movement.Right));
+        Assert.Throws<NotYourTurnException>(() => game.MoveMe(Movement.Right));
+    }
+
+    [Test]
+    public void PreyCanOnlyMovesInItsTurn()
+    {
+        SpiderHuntingGameMock game = new(new(0, 0), new(2, 2));
+
+        game.MoveMe(Movement.Right);
+        game.MovePrey();
+
+        Assert.That(game.MyTurn, Is.True);
+        Assert.Throws<NotYourTurnException>(() => game.MovePrey());
     }
 
     [Test]
@@ -166,6 +178,19 @@ public class Tests
     public void MoveToNoCell()
        => AssertInvalidMovement(5, 0, Movement.Down);
 
+    [Test]
+    public void MovePrey()
+    {
+        SpiderHuntingGameMock game = new(new(0, 0), new(8, 0));
+
+        Position[] possibleNewPositions = new Position[] { new(7, 0), new(9, 0) };
+
+        game.MoveMe(Movement.Right);
+        game.MovePrey();
+
+        Assert.That(possibleNewPositions, Contains.Item(game.PreyPosition));
+    }
+
     private static int DistanceBetween(Position myPosition, Position preyPosition)
         => Math.Abs(myPosition.X - preyPosition.X) + Math.Abs(myPosition.Y - preyPosition.Y);
 
@@ -173,15 +198,15 @@ public class Tests
     {
         SpiderHuntingGameMock game = new(new(startingX, startingY), new(8, 9));
 
-        game.Move(movement);
+        game.MoveMe(movement);
 
         Assert.That(game.MyPosition, Is.EqualTo(new Position(resultingX, resultingY)));
     }
 
-    public static void AssertInvalidMovement(int startingX, int startingY, Movement movement)
+    private static void AssertInvalidMovement(int startingX, int startingY, Movement movement)
     {
         SpiderHuntingGameMock game = new(new(startingX, startingY), new(8, 9));
 
-        Assert.Throws<InvalidMovementException>(() => game.Move(movement));
+        Assert.Throws<InvalidMovementException>(() => game.MoveMe(movement));
     }
 }

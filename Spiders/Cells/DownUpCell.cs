@@ -1,5 +1,4 @@
-﻿using Spiders.Exceptions;
-using static Spiders.SpiderHuntingGame;
+﻿using static Spiders.SpiderHuntingGame;
 
 namespace Spiders.Cells;
 internal class DownUpCell : IMapCell
@@ -9,14 +8,7 @@ internal class DownUpCell : IMapCell
 
     public char Symbol => '|';
 
-    public Position Position { get; }
+    public Movement[] PosibleMovements => new Movement[] { Movement.Down, Movement.Up };
 
-    public Position Move(Movement movement)
-        => movement switch {
-            Movement.Up => new(Position.X, Position.Y - 1),
-            Movement.Down => new(Position.X, Position.Y + 1),
-            Movement.Left => throw new InvalidMovementException(),
-            Movement.Right => throw new InvalidMovementException(),
-            _ => throw new InvalidMovementException(),
-        };
+    public Position Position { get; }
 }
