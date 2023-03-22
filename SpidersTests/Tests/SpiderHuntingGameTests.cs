@@ -1,10 +1,12 @@
 using Spiders;
+using Spiders.Cells;
 using Spiders.Exceptions;
+using SpidersTests.Mocks;
 using static Spiders.SpiderHuntingGame;
 
-namespace SpidersTests;
+namespace SpidersTests.Tests;
 
-public class Tests
+public class SpiderHuntingGameTests
 {
     [Test]
     public void StartingDistance()
@@ -60,16 +62,17 @@ public class Tests
     public void GetOutput()
     {
         SpiderHuntingGame game = new();
-        string map = "/ - - O - O - O - O \r\n" +
-            "/ | | | |           \r\n" +
-            "| / - O - O - O - O \r\n" +
-            "| / | | | |         \r\n" +
-            "O - - O - O - O - O \r\n" +
-            "| \\ | | | |         \r\n" +
-            "| \\ - O - O - O - O \r\n" +
-            "\\ | | | |           \r\n" +
-            "\\ - - O - O - O - O \r\n";
-        string positions = "My position:{0}, {1}\r\n" +
+        string map = "  0 1 2 3 4 5 6 7 8 9\r\n" +
+            "0 / - - O - O - O - O \r\n" +
+            "1 / | | | |           \r\n" +
+            "2 | / - O - O - O - O \r\n" +
+            "3 | / | | | |         \r\n" +
+            "4 O - - O - O - O - O \r\n" +
+            "5 | \\ | | | |         \r\n" +
+            "6 | \\ - O - O - O - O \r\n" +
+            "7 \\ | | | |           \r\n" +
+            "8 \\ - - O - O - O - O \r\n";
+        string positions = "My position: {0}, {1}\r\n" +
             "Prey's position: {2}, {3}";
         string parametrizedOutput = map + "\r\n" + positions;
         string expectedOutput = string.Format(parametrizedOutput,
@@ -189,6 +192,36 @@ public class Tests
         game.MovePrey();
 
         Assert.That(possibleNewPositions, Contains.Item(game.PreyPosition));
+    }
+
+    [Test]
+    public void PreyDoesNotMoveIfItWillBeCaught()
+    {
+        SpiderHuntingGameMock game = new(new(7, 0), new(9, 0));
+
+        game.MoveMe(Movement.Right);
+        Assert.That(game.PreyPosition, Is.EqualTo(new Position(9, 0)));
+        game.MovePrey();
+        Assert.That(game.PreyPosition, Is.EqualTo(new Position(9, 0)));
+    }
+
+    [Test]
+    public void PreyStartingPositionIsNeverEmpty()
+    {
+        for (int i = 0; i < 100; i++) {
+            SpiderHuntingGame game = new();
+            Assert.That(CellMap.CellOf(game.PreyPosition), Is.Not.TypeOf<NoCell>());
+        }
+    }
+
+    [Test]
+    public void AllCellsExist()
+    {
+        for (int x = 0; x <= 9; x++) {
+            for (int y = 0; y <= 8; y++) {
+                Assert.That(CellMap.CellOf(new Position(x, y)), Is.Not.Null, $"{{{x}, {y}}}");
+            }
+        }
     }
 
     private static int DistanceBetween(Position myPosition, Position preyPosition)

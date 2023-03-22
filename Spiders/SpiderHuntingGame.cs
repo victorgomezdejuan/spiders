@@ -32,7 +32,7 @@ public class SpiderHuntingGame
 
     public string Output => string.Format(
         CellMap.MapOutput() + "\r\n" +
-        "My position:{0}, {1}\r\n" +
+        "My position: {0}, {1}\r\n" +
         "Prey's position: {2}, {3}",
         MyPosition.X, MyPosition.Y, PreyPosition.X, PreyPosition.Y);
 
@@ -55,23 +55,34 @@ public class SpiderHuntingGame
         if (MyTurn)
             throw new NotYourTurnException();
 
-        List<Movement> possibleMovements = CellOf(PreyPosition).PosibleMovements.ToList();
-        int nextMovementIndex;
+        Position currentPosition = PreyPosition;
+        Position newPosition = CalculatePreyPotentialNewPosition();
+
+        if (InvalidPreyPosition(newPosition))
+            PreyPosition = currentPosition;
+        else
+            PreyPosition = newPosition;
+
+        MyTurn = true;
+    }
+
+    private Position CalculatePreyPotentialNewPosition()
+    {
         Position newPosition;
+        List<Movement> possibleMovements = CellMap.CellOf(PreyPosition).PosibleMovements.ToList();
 
         do {
-            nextMovementIndex = new Random().Next(possibleMovements.Count - 1);
+            int nextMovementIndex = new Random().Next(possibleMovements.Count - 1);
             newPosition = ApplyMovementToPosition(possibleMovements[nextMovementIndex], PreyPosition);
             possibleMovements.RemoveAt(nextMovementIndex);
-        } while (InvalidPosition(newPosition));
+        } while (possibleMovements.Count > 0 && InvalidPreyPosition(newPosition));
 
-        PreyPosition = newPosition;
-        MyTurn = true;
+        return newPosition;
     }
 
     private static Position ApplyMovementToPosition(Movement movement, Position position)
     {
-        if (!CellOf(position).PosibleMovements.Contains(movement))
+        if (!CellMap.CellOf(position).PosibleMovements.Contains(movement))
             throw new InvalidMovementException();
 
         return movement switch {
@@ -83,11 +94,15 @@ public class SpiderHuntingGame
         };
     }
 
-    private static IMapCell CellOf(Position newPosition)
-        => CellMap.Instance.Single(c => c.Position.Equals(newPosition));
-
     private static bool InvalidPosition(Position newPosition)
-        => newPosition.X < 0 || newPosition.X > CellMap.MaxXPosition || newPosition.Y < 0 || newPosition.Y > CellMap.MaxYPosition || CellOf(newPosition) is NoCell;
+        => newPosition.X < 0 ||
+        newPosition.X > CellMap.MaxXPosition ||
+        newPosition.Y < 0 ||
+        newPosition.Y > CellMap.MaxYPosition ||
+        CellMap.CellOf(newPosition) is NoCell;
+
+    private bool InvalidPreyPosition(Position newPosition)
+        => InvalidPosition(newPosition) || newPosition.Equals(MyPosition);
 
     private static Position MyRandomPosition()
         => new(RandomValue(CellMap.MaxXPosition), RandomValue(CellMap.MaxYPosition));
@@ -97,12 +112,17 @@ public class SpiderHuntingGame
 
     private Position PreyRandomPosition()
     {
-        int xDistance = new Random().Next(InitialDistance);
-        int yDistance = InitialDistance - xDistance;
-        int xPosition = CalculatePreyStartingCoordinate(xDistance, Axis.X);
-        int yPosition = CalculatePreyStartingCoordinate(yDistance, Axis.Y);
+        Position newPosition;
 
-        return new Position(xPosition, yPosition);
+        do {
+            int xDistance = new Random().Next(InitialDistance);
+            int yDistance = InitialDistance - xDistance;
+            int xPosition = CalculatePreyStartingCoordinate(xDistance, Axis.X);
+            int yPosition = CalculatePreyStartingCoordinate(yDistance, Axis.Y);
+            newPosition = new Position(xPosition, yPosition);
+        } while (CellMap.CellOf(newPosition) is NoCell);
+
+        return newPosition;
     }
 
     private int CalculatePreyStartingCoordinate(int distance, Axis axis)

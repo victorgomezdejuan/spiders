@@ -25,8 +25,8 @@ public static class CellMap
         new AllDirectionCell(0, 4), new LeftRightCell(1, 4), new LeftRightCell(2, 4), new AllDirectionCell(3, 4), new LeftRightCell(4, 4),
         new AllDirectionCell(5, 4), new LeftRightCell(6, 4), new AllDirectionCell(7, 4), new LeftRightCell(8, 4), new AllDirectionCell(9, 4),
 
-        new DownUpCell(0, 5), new UpRightCell(1, 5), new DownUpCell(2, 5), new DownUpCell(3, 4), new DownUpCell(4, 5),
-        new DownUpCell(5, 5), new NoCell(6, 5), new NoCell(7, 5), new NoCell(8, 4), new NoCell(9, 5),
+        new DownUpCell(0, 5), new UpRightCell(1, 5), new DownUpCell(2, 5), new DownUpCell(3, 5), new DownUpCell(4, 5),
+        new DownUpCell(5, 5), new NoCell(6, 5), new NoCell(7, 5), new NoCell(8, 5), new NoCell(9, 5),
 
         new DownUpCell(0, 6), new UpRightCell(1, 6), new LeftRightCell(2, 6), new AllDirectionCell(3, 6), new LeftRightCell(4, 6),
         new AllDirectionCell(5, 6), new LeftRightCell(6, 6), new AllDirectionCell(7, 6), new LeftRightCell(8, 6), new AllDirectionCell(9, 6),
@@ -42,10 +42,12 @@ public static class CellMap
     {
         int index = 0;
         StringBuilder output = new();
+        output.AppendLine("  0 1 2 3 4 5 6 7 8 9");
 
         for (int i = 0; i <= MaxYPosition; i++) {
+            output.Append($"{i} ");
             for (int j = 0; j <= MaxXPosition; j++) {
-                output.Append(Instance[index].Symbol.ToString() + " ");
+                output.Append($"{Instance[index].Symbol.ToString()} ");
                 index++;
             }
             output.AppendLine();
@@ -53,4 +55,7 @@ public static class CellMap
 
         return output.ToString();
     }
+
+    public static IMapCell CellOf(Position newPosition)
+        => Instance.Single(c => c.Position.Equals(newPosition));
 }

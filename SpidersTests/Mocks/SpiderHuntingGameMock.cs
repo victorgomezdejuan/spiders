@@ -1,6 +1,6 @@
 ﻿using Spiders;
 
-namespace SpidersTests;
+namespace SpidersTests.Mocks;
 internal class SpiderHuntingGameMock : SpiderHuntingGame
 {
     public SpiderHuntingGameMock(Position myPosition, Position preyPosition) : base()
